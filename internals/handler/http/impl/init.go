@@ -3,22 +3,22 @@ package impl
 import (
 	httpframework "github.com/bagusandrian/reconciliation-service/internals/handler/http"
 	"github.com/bagusandrian/reconciliation-service/internals/model"
-	ucDummy "github.com/bagusandrian/reconciliation-service/internals/usecase/dummy"
+	ucReconciliation "github.com/bagusandrian/reconciliation-service/internals/usecase/reconciliation"
 )
 
 type handler struct {
 	config  *model.Config
-	usecase ucDummy.Usecase
+	usecase ucReconciliation.Usecase
 }
 
 func New(
-	cfg *model.Config, ucDummy ucDummy.Usecase,
+	cfg *model.Config, ucReconciliation ucReconciliation.Usecase,
 ) httpframework.Handler {
 
 	// init repository
 	h := &handler{
 		config:  cfg,
-		usecase: ucDummy,
+		usecase: ucReconciliation,
 	}
 	return h
 }

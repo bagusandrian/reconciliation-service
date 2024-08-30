@@ -37,5 +37,5 @@ run-http: build-http
 
 run-docker:
 	@echo "> Build image on docker..."
-	@docker build -t dummy .
+	@docker build -t reconciliation-service .
 	@docker-compose up

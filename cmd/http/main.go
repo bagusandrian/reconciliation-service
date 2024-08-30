@@ -19,7 +19,7 @@ func main() {
 			log.Fatalf("%v", err)
 		}
 	}()
-	log.Println("Starting dummy http")
+	log.Println("Starting reconciliation-service http")
 
 	// init config
 	cfg, err := config.New(repoName)

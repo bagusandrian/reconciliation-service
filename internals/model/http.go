@@ -8,6 +8,7 @@ type (
 		Error          string `json:"error,omitempty"`
 		ProcessingTime string `json:"processing_time"`
 	}
+	// request of Reconciliation
 	ReconciliationRequest struct {
 		SystemTransactionCSVFilePath  string             `json:"system_transaction_csv_file_path"`
 		BankStatements                []BankCSCVFilePath `json:"bank_statements"`
@@ -20,6 +21,9 @@ type (
 		BankName    string `json:"bank_name"`
 		CSVFilePath string `json:"csv_file_path"`
 	}
+	// end of request Reconciliation
+
+	// response of Reconciliation
 	ReconciliationResponse struct {
 		TotalTranscationsProcessed       int64                                 `json:"total_transactions_processed"`
 		TotalNumberMatchedTransactions   int64                                 `json:"total_number_matched_transactions"`
@@ -41,4 +45,5 @@ type (
 			TransactionTime  string  `json:"transaction_time,omitempty"`
 		} `json:"detail_transaction"`
 	}
+	// end of response Reconciliation
 )

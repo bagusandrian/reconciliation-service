@@ -7,8 +7,8 @@ import (
 
 	hImpl "github.com/bagusandrian/reconciliation-service/internals/handler/http/impl"
 	"github.com/bagusandrian/reconciliation-service/internals/model"
-	dbImpl "github.com/bagusandrian/reconciliation-service/internals/repository/db/impl"
-	ucImpl "github.com/bagusandrian/reconciliation-service/internals/usecase/dummy/impl"
+	readFileImpl "github.com/bagusandrian/reconciliation-service/internals/repository/readfile/impl"
+	ucImpl "github.com/bagusandrian/reconciliation-service/internals/usecase/reconciliation/impl"
 	"github.com/gofiber/fiber/v2"
 	"github.com/gofiber/fiber/v2/middleware/logger"
 )
@@ -22,9 +22,9 @@ func startApp(cfg *model.Config) (err error) {
 		}
 	}()
 
-	repositoryDB := dbImpl.New(cfg)
-	usecaseDummy := ucImpl.New(cfg, repositoryDB)
-	handlerDummy := hImpl.New(cfg, usecaseDummy)
+	repositoryReadFile := readFileImpl.New(cfg)
+	usecaseReadFile := ucImpl.New(cfg, repositoryReadFile)
+	handlerReconciliation := hImpl.New(cfg, usecaseReadFile)
 
 	app := fiber.New(fiber.Config{
 		AppName: "reconciliation Service",
@@ -38,7 +38,7 @@ func startApp(cfg *model.Config) (err error) {
 			}
 		},
 	}))
-	app.Post("/reconciliation", handlerDummy.Reconciliation)
+	app.Post("/reconciliation", handlerReconciliation.Reconciliation)
 	log.Fatalln(app.Listen(fmt.Sprintf(":%v", cfg.Server.HTTP.Port)))
 	return nil
 }
