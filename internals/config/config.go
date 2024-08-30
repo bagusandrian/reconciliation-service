@@ -2,15 +2,15 @@ package config
 
 import (
 	"fmt"
-	"net"
 	"os"
 	"path/filepath"
 
 	cons "github.com/bagusandrian/reconciliation-service/internals/constant"
+	"github.com/bagusandrian/reconciliation-service/internals/model"
 	yaml "gopkg.in/yaml.v2"
 )
 
-func New(repoName string) (*Config, error) {
+func New(repoName string) (*model.Config, error) {
 	filename := getConfigFile(repoName)
 	f, err := os.Open(filename)
 	if err != nil {
@@ -18,38 +18,13 @@ func New(repoName string) (*Config, error) {
 	}
 	defer f.Close()
 
-	var cfg Config
+	var cfg model.Config
 	err = yaml.NewDecoder(f).Decode(&cfg)
 	if err != nil {
 		return nil, err
 	}
 
 	return &cfg, nil
-}
-
-type Config struct {
-	Server Server `yaml:"server"`
-}
-
-func getHostInfo() (name, ip string) {
-	var err error
-	name, err = os.Hostname()
-	if err != nil {
-		name = "-"
-	}
-
-	ip = "-"
-	conn, err := net.Dial("udp", "8.8.8.8:80")
-	if err != nil {
-		return name, ip
-	}
-	defer conn.Close()
-
-	localAddr, ok := conn.LocalAddr().(*net.UDPAddr)
-	if ok {
-		ip = localAddr.IP.String()
-	}
-	return name, ip
 }
 
 // getConfigFile get  config file name

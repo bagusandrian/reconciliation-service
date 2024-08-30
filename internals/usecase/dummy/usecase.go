@@ -8,5 +8,6 @@ import (
 
 //go:generate mockery --name=Usecase --filename=mock_usecase.go --inpackage
 type Usecase interface {
-	GetDummy(ctx context.Context, request model.GetDummyRequest) (response model.GetDummyResponse, err error)
+	// reconciliation usecase
+	ReconciliationComparition(ctx context.Context, req model.ReconciliationRequest) (resp model.ReconciliationResponse, err error)
 }

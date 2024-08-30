@@ -1,18 +1,18 @@
 package impl
 
 import (
-	"github.com/bagusandrian/reconciliation-service/internals/config"
 	httpframework "github.com/bagusandrian/reconciliation-service/internals/handler/http"
+	"github.com/bagusandrian/reconciliation-service/internals/model"
 	ucDummy "github.com/bagusandrian/reconciliation-service/internals/usecase/dummy"
 )
 
 type handler struct {
-	config  *config.Config
+	config  *model.Config
 	usecase ucDummy.Usecase
 }
 
 func New(
-	cfg *config.Config, ucDummy ucDummy.Usecase,
+	cfg *model.Config, ucDummy ucDummy.Usecase,
 ) httpframework.Handler {
 
 	// init repository
