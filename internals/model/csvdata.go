@@ -19,6 +19,7 @@ type (
 	DataBankCSV struct {
 		UniqueIdentifier string
 		Amount           float64
+		Type             TypeTransaction
 		DateString       string
 		Date             time.Time
 	}

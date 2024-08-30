@@ -3,6 +3,7 @@ package impl
 import (
 	"encoding/csv"
 	"fmt"
+	"math"
 	"os"
 	"reflect"
 	"strconv"
@@ -32,19 +33,36 @@ func (r *repoReadFile) GetSystemReconciliationCSV(req model.ReconciliationReques
 		if len(eachrecord) != cons.LenRowSystem {
 			return resp, fmt.Errorf("row %d is invalid data", countRow)
 		}
+		// validate transaction time
+		transactionTime, err := time.ParseInLocation("2006-01-02 15:04:05", eachrecord[3], time.Local)
+		if err != nil {
+			return resp, fmt.Errorf("row %d transaction_time is not valid %s err:%+v", countRow, eachrecord[3], err)
+		}
+
+		// filtering out of date range
+		// we don't need to process this data
+		if transactionTime.Before(req.ReconciliationStartDate) || transactionTime.After(req.ReconciliationEndDate) {
+			continue
+		}
 		// validate amount
 		amount, err := strconv.ParseFloat(eachrecord[1], 64)
 		if err != nil {
 			return resp, fmt.Errorf("row %d amount is not valid %s err:%+v", countRow, eachrecord[1], err)
 		}
-		// validate type
+		// validate type, because confusing either using string (CREDIT or DEBIT) or number (1 or 2)
+		// so i decide to handle 2 cases
+		// #1 validate type of number
 		typeTransaction, err := strconv.Atoi(eachrecord[2])
 		if err != nil {
-			return resp, fmt.Errorf("row %d type is not valid %s err:%+v", countRow, eachrecord[2], err)
-		}
-		transactionTime, err := time.Parse("2006-01-02 15:04:05", eachrecord[3])
-		if err != nil {
-			return resp, fmt.Errorf("row %d transaction_time is not valid %s err:%+v", countRow, eachrecord[3], err)
+			// validate string
+			switch eachrecord[2] {
+			case "DEBIT":
+				typeTransaction = 1
+			case "CREDIT":
+				typeTransaction = 2
+			default:
+				return resp, fmt.Errorf("row %d type is not valid %s err:%+v", countRow, eachrecord[2], err)
+			}
 		}
 		DataSystemCSV = append(DataSystemCSV, model.DataSystemCSV{
 			TrxID:                 eachrecord[0],
@@ -78,19 +96,31 @@ func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest)
 			if len(eachrecord) != cons.LenRowBank {
 				return resp, fmt.Errorf("bank %s row %d is invalid data", v.BankName, countRow)
 			}
+			transactionDate, err := time.ParseInLocation("2006-01-02", eachrecord[2], time.Local)
+			if err != nil {
+				return resp, fmt.Errorf("row %d transaction_time is not valid %s err:%+v", countRow, eachrecord[3], err)
+			}
+			// filtering out of date range
+			// we don't need to process this data
+			if transactionDate.Before(req.ReconciliationStartDate) || transactionDate.After(req.ReconciliationEndDate) {
+				continue
+			}
 			// validate amount
 			amount, err := strconv.ParseFloat(eachrecord[1], 64)
 			if err != nil {
 				return resp, fmt.Errorf("bank %s row %d amount is not valid %s err:%+v", v.BankName, countRow, eachrecord[1], err)
 			}
-
-			transactionDate, err := time.Parse("2006-01-02", eachrecord[2])
-			if err != nil {
-				return resp, fmt.Errorf("row %d transaction_time is not valid %s err:%+v", countRow, eachrecord[3], err)
+			transactionType := 0
+			if math.Signbit(amount) {
+				transactionType = 1
+			} else {
+				transactionType = 2
 			}
+
 			DataBankCSV = append(DataBankCSV, model.DataBankCSV{
 				UniqueIdentifier: eachrecord[0],
 				Amount:           amount,
+				Type:             model.TypeTransaction(transactionType),
 				DateString:       eachrecord[2],
 				Date:             transactionDate,
 			})
