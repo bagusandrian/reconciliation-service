@@ -1,0 +1,17 @@
+cmd/http/http
+cmd/grpc/grpc
+cmd/consumer/consumer
+vendor/
+*.exe
+*.exe~
+*.test
+*.prof
+*.rar
+*.zip
+*.gz
+*.psd
+*.bmd
+*.cfg
+*.pptx
+*.log
+*.bin

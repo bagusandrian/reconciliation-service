@@ -1,0 +1,7 @@
+server:
+  http:
+    port: "9000"
+  grpc:
+    port: "9001"
+  nsq:
+    port: "9002"
