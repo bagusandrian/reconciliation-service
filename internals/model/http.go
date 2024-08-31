@@ -33,17 +33,20 @@ type (
 		TotalDiscrepanciesAmount         float64                               `json:"total_discrepancies_amount"`
 	}
 	DetailMatchedTransaction struct {
-		TotalNumberMatchedTransactions int64 `json:"total_number_matched_transactions"`
+		TotalNumberMatchedTransactions int64               `json:"total_number_matched_transactions"`
+		DetailTransaction              []DetailTransaction `json:"detail_transaction"`
 	}
 	DetailUnmatchedTransaction struct {
-		Info              string `json:"info"`
-		DetailTransaction struct {
-			TrxID            string  `json:"trx_id,omitempty"`
-			UniqueIdentifier string  `json:"unique_identifier,omitempty"`
-			Amount           float64 `json:"amount,omitempty"`
-			Date             string  `json:"date,omitempty"`
-			TransactionTime  string  `json:"transaction_time,omitempty"`
-		} `json:"detail_transaction"`
+		Info              string              `json:"info"`
+		DetailTransaction []DetailTransaction `json:"detail_transaction"`
+	}
+	DetailTransaction struct {
+		TrxID            string          `json:"trx_id,omitempty"`
+		UniqueIdentifier string          `json:"unique_identifier,omitempty"`
+		Amount           float64         `json:"amount,omitempty"`
+		Date             string          `json:"date,omitempty"`
+		Type             TypeTransaction `json:"type,omitempty"`
+		TransactionTime  string          `json:"transaction_time,omitempty"`
 	}
 	// end of response Reconciliation
 )

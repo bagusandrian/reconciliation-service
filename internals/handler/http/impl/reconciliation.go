@@ -68,13 +68,13 @@ func validationReconciliationRequest(req *model.ReconciliationRequest) error {
 	if err != nil {
 		return fmt.Errorf("failed parsing reconciliaton_start_date: %+v", err)
 	}
-	req.ReconciliationStartDate = time.Date(req.ReconciliationStartDate.Year(), req.ReconciliationEndDate.Month(), req.ReconciliationStartDate.Day(), 0, 0, 0, 0, time.Local)
+	req.ReconciliationStartDate = time.Date(req.ReconciliationStartDate.Year(), req.ReconciliationStartDate.Month(), req.ReconciliationStartDate.Day(), 0, 0, 0, 0, time.Local)
 	// validation reconciliation end date
 	req.ReconciliationEndDate, err = time.Parse("2006-01-02", req.ReconciliationEndDateString)
 	if err != nil {
 		return fmt.Errorf("failed parsing reconciliaton_end_date: %+v", err)
 	}
-	req.ReconciliationEndDate = time.Date(req.ReconciliationStartDate.Year(), req.ReconciliationEndDate.Month(), req.ReconciliationStartDate.Day(), 23, 59, 59, 999999999, time.Local)
+	req.ReconciliationEndDate = time.Date(req.ReconciliationEndDate.Year(), req.ReconciliationEndDate.Month(), req.ReconciliationEndDate.Day(), 23, 59, 59, 999999999, time.Local)
 	// validation start date must lower than start date
 	if req.ReconciliationEndDate.Compare(req.ReconciliationStartDate) < 0 {
 		return fmt.Errorf("start date: %s must lower than end date: %s", req.ReconciliationStartDateString, req.ReconciliationEndDateString)

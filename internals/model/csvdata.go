@@ -9,12 +9,22 @@ const (
 
 type (
 	TypeTransaction int
-	DataSystemCSV   struct {
+	DataSystem      struct {
+		DataSystemCSV []DataSystemCSV
+		TotalData     int64
+	}
+	DataSystemCSV struct {
 		TrxID                 string
 		Amount                float64
 		Type                  TypeTransaction
 		TransactionTimeString string
 		TransactionTime       time.Time
+		MatchTransaction      bool
+		BankID                string
+	}
+	DataBank struct {
+		DataBankCSV map[string][]DataBankCSV
+		TotalData   int64
 	}
 	DataBankCSV struct {
 		UniqueIdentifier string
@@ -22,5 +32,7 @@ type (
 		Type             TypeTransaction
 		DateString       string
 		Date             time.Time
+		MatchTransaction bool
+		TrxID            string
 	}
 )

@@ -14,7 +14,7 @@ import (
 	"github.com/bagusandrian/reconciliation-service/internals/model"
 )
 
-func (r *repoReadFile) GetSystemReconciliationCSV(req model.ReconciliationRequest) (resp []model.DataSystemCSV, err error) {
+func (r *repoReadFile) GetSystemReconciliationCSV(req model.ReconciliationRequest) (resp model.DataSystem, err error) {
 	// open file
 	headerCSV, records, err := r.openFile(req.SystemTransactionCSVFilePath)
 	if err != nil {
@@ -60,6 +60,8 @@ func (r *repoReadFile) GetSystemReconciliationCSV(req model.ReconciliationReques
 				typeTransaction = 1
 			case "CREDIT":
 				typeTransaction = 2
+				// convert amount into negative
+				amount = 0 - amount
 			default:
 				return resp, fmt.Errorf("row %d type is not valid %s err:%+v", countRow, eachrecord[2], err)
 			}
@@ -73,12 +75,14 @@ func (r *repoReadFile) GetSystemReconciliationCSV(req model.ReconciliationReques
 		})
 		countRow++
 	}
-	return DataSystemCSV, err
+	resp.DataSystemCSV = DataSystemCSV
+	resp.TotalData = int64(len(DataSystemCSV))
+	return resp, err
 }
-func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest) (resp map[string][]model.DataBankCSV, err error) {
-	resp = make(map[string][]model.DataBankCSV)
+func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest) (resp model.DataBank, err error) {
+	resp.DataBankCSV = make(map[string][]model.DataBankCSV)
 	for _, v := range req.BankStatements {
-		resp[v.BankName] = []model.DataBankCSV{}
+		resp.DataBankCSV[v.BankName] = []model.DataBankCSV{}
 		// open file
 		headerCSV, records, err := r.openFile(v.CSVFilePath)
 		if err != nil {
@@ -112,9 +116,9 @@ func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest)
 			}
 			transactionType := 0
 			if math.Signbit(amount) {
-				transactionType = 1
-			} else {
 				transactionType = 2
+			} else {
+				transactionType = 1
 			}
 
 			DataBankCSV = append(DataBankCSV, model.DataBankCSV{
@@ -126,7 +130,8 @@ func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest)
 			})
 			countRow++
 		}
-		resp[v.BankName] = DataBankCSV
+		resp.DataBankCSV[v.BankName] = DataBankCSV
+		resp.TotalData += int64(len(DataBankCSV))
 
 	}
 	return resp, nil
