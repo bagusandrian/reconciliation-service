@@ -8,6 +8,10 @@ COPY go.mod go.sum ./
 RUN mkdir -p /etc/reconciliation-service/
 # copy config file
 COPY files/etc/reconciliation-service/reconciliation-service.development.yaml /etc/reconciliation-service/
+# make directory for storing dummy csv
+RUN mkdir -p /etc/csv/
+# copy dummy csv
+COPY files/csv/*.csv /etc/csv/
 # Download all dependencies. Dependencies will be cached if the go.mod and go.sum files are not changed
 RUN go mod download
 # Copy the source from the current directory to the Working Directory inside the container

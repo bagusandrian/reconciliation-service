@@ -6,16 +6,3 @@ services:
       - "9000:9000"
     environment:
       - SysEnv=testing
-    depends_on:
-      - db
-  db:
-    image: postgres:13
-    restart: always
-    environment:
-      POSTGRES_USER: reconciliation_service
-      POSTGRES_PASSWORD: reconciliation_service
-      POSTGRES_DB: reconciliation-db
-    volumes:
-      - db-data:/var/lib/postgresql/data
-volumes:
-  db-data:

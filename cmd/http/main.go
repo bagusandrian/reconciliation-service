@@ -9,7 +9,7 @@ import (
 var cfgTest bool
 
 const (
-	repoName = "framework"
+	repoName = "reconciliation-service"
 	appName  = repoName + "-http"
 )
 
