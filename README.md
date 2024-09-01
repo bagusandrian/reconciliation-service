@@ -1,7 +1,9 @@
-# Reconciliation-Service
+            # Reconciliation-Service
 
 ## About Reconciliation-Service
-This service handling for reconciliation between system transactions internal and bank statements. This service helps identify errors, discrepancies, and missing transactions.
+This service simplifies the reconciliation process between your internal system transactions and bank statements.   
+
+It helps you identify discrepancies, missing transactions, and errors, saving you time and ensuring financial accuracy. 
 
 ## Processing flow
 
