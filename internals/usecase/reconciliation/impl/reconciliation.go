@@ -17,12 +17,12 @@ func (u *usecase) ReconciliationComparition(ctx context.Context, req model.Recon
 		return resp, err
 	}
 	// processing of matched transactions
-	resp = u.getMatchData(&systemTransaction, &bankTransaction)
+	resp = u.reconciliationData(&systemTransaction, &bankTransaction)
 	// processing of unmatched transactions
 	return resp, nil
 }
 
-func (u *usecase) getMatchData(systemTransaction *model.DataSystem, bankTransaction *model.DataBank) model.ReconciliationResponse {
+func (u *usecase) reconciliationData(systemTransaction *model.DataSystem, bankTransaction *model.DataBank) model.ReconciliationResponse {
 	var (
 		result                   model.ReconciliationResponse
 		unMatchTransactionSystem []model.DetailTransaction

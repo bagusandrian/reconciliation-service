@@ -91,7 +91,7 @@ func Test_usecase_ReconciliationComparition(t *testing.T) {
 	}
 }
 
-func Test_usecase_getMatchData(t *testing.T) {
+func Test_usecase_reconciliationData(t *testing.T) {
 	rReadFileMock := new(readfile.MockReadFile)
 	conf := &model.Config{}
 	// init data bank founded
@@ -184,7 +184,7 @@ func Test_usecase_getMatchData(t *testing.T) {
 				cfg:      conf,
 				readFile: rReadFileMock,
 			}
-			if got := u.getMatchData(tt.args.systemTransaction, tt.args.bankTransaction); !reflect.DeepEqual(got, tt.want) {
+			if got := u.reconciliationData(tt.args.systemTransaction, tt.args.bankTransaction); !reflect.DeepEqual(got, tt.want) {
 				resp, _ := json.Marshal(got)
 				expect, _ := json.Marshal(tt.want)
 				t.Errorf("usecase.getMatchData() = %s, want %s", resp, expect)
