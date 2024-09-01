@@ -75,6 +75,41 @@ This service running on port `:9000`, u can change port if u want on `files/etc/
 | `make test-coverage` | will run go test with total of coverage unit test |
 | `make test-fail` | will run go test and only showing log if any error |
 
+## CSV File Format
+
+1. System transaction
+
+| Header | data type | Description |
+| :----- | :-------- | :---------- |
+| `trxID` | `string` | Unique identifier for the transaction |
+| `amount` | `float64` | Transaction amount |
+| `type` | `enum`  1 -> `DEBIT`  2 -> `CREDIT` | Transaction type |
+| `transactionTime` | `datetime` | Date and time of the transaction |
+
+example: 
+
+```csv
+trxID,amount,type,transactionTime
+trx001,10000,CREDIT,2024-01-20 10:00:00
+trx002,10000,DEBIT,2024-01-20 10:00:00
+trx003,10000,CREDIT,2024-01-20 10:00:00
+```
+
+2. Bank statement
+
+| Header | data type | Description |
+| :----- | :-------- | :---------- |
+| `unique_identifier` | `string` | Unique identifier for the transaction in the bank statement (varies by bank, not necessarily equivalent to `trxID` ) |
+| `amount` | `float64` | Transaction amount | Transaction amount (can be negative for debits) |
+| `date` | `datetime` | Date of the transaction |
+
+example: 
+
+```csv
+unique_identifier,amount,date
+BRI-001,-10000,2024-01-20
+BRI-002,10000,2024-01-20
+```
 
 ## API Reference
 This service only has 1 method
