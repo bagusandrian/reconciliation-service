@@ -16,7 +16,7 @@ import (
 
 func (r *repoReadFile) GetSystemReconciliationCSV(req model.ReconciliationRequest) (resp model.DataSystem, err error) {
 	// open file
-	headerCSV, records, err := r.openFile(req.SystemTransactionCSVFilePath)
+	headerCSV, records, err := openFileCSV(req.SystemTransactionCSVFilePath)
 	if err != nil {
 		return resp, err
 	}
@@ -84,7 +84,7 @@ func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest)
 	for _, v := range req.BankStatements {
 		resp.DataBankCSV[v.BankName] = []model.DataBankCSV{}
 		// open file
-		headerCSV, records, err := r.openFile(v.CSVFilePath)
+		headerCSV, records, err := openFileCSV(v.CSVFilePath)
 		if err != nil {
 			return resp, err
 		}
@@ -137,7 +137,7 @@ func (r *repoReadFile) GetBankReconciliationCSV(req model.ReconciliationRequest)
 	return resp, nil
 }
 
-func (r *repoReadFile) openFile(filepath string) (header []string, records [][]string, err error) {
+func openFileCSV(filepath string) (header []string, records [][]string, err error) {
 	// open file
 	file, err := os.Open(filepath)
 	if err != nil {
