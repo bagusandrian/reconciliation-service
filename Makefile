@@ -23,6 +23,7 @@ test-fail:
 	@echo " > Finished testing"
 
 # run
+run: run-http
 run-http: build-http
 	@echo " > Running [app]..."
 	@cd ./cmd/http/ && ./http
