@@ -94,10 +94,10 @@ func Test_usecase_ReconciliationComparition(t *testing.T) {
 func Test_usecase_reconciliationData(t *testing.T) {
 	rReadFileMock := new(readfile.MockReadFile)
 	conf := &model.Config{}
-	// init data bank founded
-	BankTransactionFounded := model.DataBank{}
-	dataBankCSVFounded := make(map[string][]model.DataBankCSV)
-	dataBankCSVFounded["bank_testing"] = []model.DataBankCSV{
+	// init data bank case success
+	BankTransactionSuccess := model.DataBank{}
+	dataBankCSVSuccess := make(map[string][]model.DataBankCSV)
+	dataBankCSVSuccess["bank_testing"] = []model.DataBankCSV{
 		model.DataBankCSV{
 			UniqueIdentifier: "bank-testing-001",
 			Amount:           10000,
@@ -105,15 +105,42 @@ func Test_usecase_reconciliationData(t *testing.T) {
 			Type:             model.Debit,
 		},
 		model.DataBankCSV{
-			UniqueIdentifier: "bank-testing-001",
+			UniqueIdentifier: "bank-testing-002",
 			Amount:           -10000,
 			DateString:       "2024-01-01",
 			Type:             model.Credit,
 		},
 	}
-	BankTransactionFounded.TotalData = 2
-	BankTransactionFounded.DataBankCSV = dataBankCSVFounded
-	// init want response case success
+	BankTransactionSuccess.TotalData = 2
+	BankTransactionSuccess.DataBankCSV = dataBankCSVSuccess
+
+	// init data bank case not found several
+	BankTransactionNotFoundSeveral := model.DataBank{}
+	dataBankCSVNotFoundSeveral := make(map[string][]model.DataBankCSV)
+	dataBankCSVNotFoundSeveral["bank_testing"] = []model.DataBankCSV{
+		model.DataBankCSV{
+			UniqueIdentifier: "bank-testing-001",
+			Amount:           10000,
+			DateString:       "2024-01-01",
+			Type:             model.Debit,
+		},
+		model.DataBankCSV{
+			UniqueIdentifier: "bank-testing-002",
+			Amount:           -10000,
+			DateString:       "2024-01-01",
+			Type:             model.Credit,
+		},
+		model.DataBankCSV{
+			UniqueIdentifier: "bank-testing-003",
+			Amount:           -22222,
+			DateString:       "2024-01-01",
+			Type:             model.Credit,
+		},
+	}
+	BankTransactionNotFoundSeveral.TotalData = 2
+	BankTransactionNotFoundSeveral.DataBankCSV = dataBankCSVNotFoundSeveral
+
+	// init detail match tansaction response case success
 	detailMatchTransactionsSuccess := make(map[string]model.DetailMatchedTransaction)
 	detailMatchTransactionsSuccess["bank_testing"] = model.DetailMatchedTransaction{
 		TotalNumberMatchedTransactions: 2,
@@ -127,13 +154,36 @@ func Test_usecase_reconciliationData(t *testing.T) {
 			},
 			model.DetailTransaction{
 				TrxID:            "trx002",
-				UniqueIdentifier: "bank-testing-001",
+				UniqueIdentifier: "bank-testing-002",
 				Amount:           -10000,
 				Date:             "2024-01-01",
 				TransactionTime:  "2024-01-01 10:00:01",
 			},
 		},
 	}
+	// init detail match tansaction response case not found several
+	detailMatchTransactionsNotFoundSeveral := make(map[string]model.DetailMatchedTransaction)
+	detailMatchTransactionsNotFoundSeveral["bank_testing"] = model.DetailMatchedTransaction{
+		TotalNumberMatchedTransactions: 2,
+		DetailTransaction: []model.DetailTransaction{
+			model.DetailTransaction{
+				TrxID:            "trx001",
+				UniqueIdentifier: "bank-testing-001",
+				Amount:           10000,
+				Date:             "2024-01-01",
+				TransactionTime:  "2024-01-01 10:00:00",
+			},
+			model.DetailTransaction{
+				TrxID:            "trx002",
+				UniqueIdentifier: "bank-testing-002",
+				Amount:           -10000,
+				Date:             "2024-01-01",
+				TransactionTime:  "2024-01-01 10:00:01",
+			},
+		},
+	}
+
+	// init response success case
 	detailOfUnmatchedTransactionsSuccess := make(map[string]model.DetailUnmatchedTransaction)
 	wantResponseSuccess := model.ReconciliationResponse{
 		TotalTranscationsProcessed:       4,
@@ -141,6 +191,40 @@ func Test_usecase_reconciliationData(t *testing.T) {
 		DetailOfMatchedTransactions:      detailMatchTransactionsSuccess,
 		TotalNumberUnmatchedTransactions: 0,
 		DetailOfUnmatchedTransactions:    detailOfUnmatchedTransactionsSuccess,
+		TotalDiscrepanciesAmount:         0,
+	}
+
+	// init response notfound severeal case
+	detailOfUnmatchedTransactionsNotFoundSeveral := make(map[string]model.DetailUnmatchedTransaction)
+	detailOfUnmatchedTransactionsNotFoundSeveral["bank_testing"] = model.DetailUnmatchedTransaction{
+		Info: "bank statement not found on any system transaction",
+		DetailTransaction: []model.DetailTransaction{
+			model.DetailTransaction{
+				UniqueIdentifier: "bank-testing-003",
+				Amount:           -22222,
+				Date:             "2024-01-01",
+				Type:             model.Debit,
+			},
+		},
+	}
+	detailOfUnmatchedTransactionsNotFoundSeveral["system"] = model.DetailUnmatchedTransaction{
+		Info: "system transaction not found on any bank statement",
+		DetailTransaction: []model.DetailTransaction{
+			model.DetailTransaction{
+				TrxID:           "trx003",
+				Amount:          9999,
+				TransactionTime: "2024-01-01 10:00:01",
+				Type:            model.Debit,
+			},
+		},
+	}
+
+	wantResponseNotFoundSeveral := model.ReconciliationResponse{
+		TotalTranscationsProcessed:       4,
+		TotalNumberMatchedTransactions:   4,
+		DetailOfMatchedTransactions:      detailMatchTransactionsNotFoundSeveral,
+		TotalNumberUnmatchedTransactions: 2,
+		DetailOfUnmatchedTransactions:    detailOfUnmatchedTransactionsNotFoundSeveral,
 		TotalDiscrepanciesAmount:         0,
 	}
 	type args struct {
@@ -173,9 +257,38 @@ func Test_usecase_reconciliationData(t *testing.T) {
 					},
 					TotalData: 2,
 				},
-				bankTransaction: &BankTransactionFounded,
+				bankTransaction: &BankTransactionSuccess,
 			},
 			want: wantResponseSuccess,
+		}, {
+			name: "some transaction not match",
+			args: args{
+				systemTransaction: &model.DataSystem{
+					DataSystemCSV: []model.DataSystemCSV{
+						model.DataSystemCSV{
+							TrxID:                 "trx001",
+							Amount:                10000,
+							Type:                  model.Debit,
+							TransactionTimeString: "2024-01-01 10:00:00",
+						},
+						model.DataSystemCSV{
+							TrxID:                 "trx002",
+							Amount:                -10000,
+							Type:                  model.Credit,
+							TransactionTimeString: "2024-01-01 10:00:01",
+						},
+						model.DataSystemCSV{
+							TrxID:                 "trx003",
+							Amount:                9999,
+							Type:                  model.Credit,
+							TransactionTimeString: "2024-01-01 10:00:01",
+						},
+					},
+					TotalData: 2,
+				},
+				bankTransaction: &BankTransactionNotFoundSeveral,
+			},
+			want: wantResponseNotFoundSeveral,
 		},
 	}
 	for _, tt := range tests {
@@ -187,7 +300,7 @@ func Test_usecase_reconciliationData(t *testing.T) {
 			if got := u.reconciliationData(tt.args.systemTransaction, tt.args.bankTransaction); !reflect.DeepEqual(got, tt.want) {
 				resp, _ := json.Marshal(got)
 				expect, _ := json.Marshal(tt.want)
-				t.Errorf("usecase.getMatchData() = %s, want %s", resp, expect)
+				t.Errorf("usecase.getMatchData() = %s, \n\nwant %s", resp, expect)
 			}
 		})
 	}
