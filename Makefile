@@ -9,19 +9,12 @@ build-http:
 	@echo " > Finished building [app]"
 
 # test
-test:
-	@echo " > Testing all..."
-	@export SYSENV=testing && go test -race -cover ./...
-	@echo " > Finished testing"
 
-test-clear:
-	@echo " > Testing all..."
-	@export SYSENV=testing && go test -race -cover -gcflags="-l" ./...
-	@echo " > Finished testing"
-
-test-v:
+test-coverage:
 	@echo " > Testing all; with verbose..."
-	@export SYSENV=testing && go test -race -cover -v ./...
+	@export SYSENV=testing && go test -race -cover -v ./... -coverprofile=cover.out && ./exclude-code-coverage.sh
+	@echo "> ******* coverage of function *******"
+	@go tool cover -func cover.out
 	@echo " > Finished testing"
 
 test-fail:

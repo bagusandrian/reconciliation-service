@@ -1,0 +1,4 @@
+github.com/bagusandrian/reconciliation-service/cmd
+github.com/bagusandrian/reconciliation-service/internals/handler/http/mock_handler.go
+github.com/bagusandrian/reconciliation-service/internals/repository/readfile/mock_read_file.go
+github.com/bagusandrian/reconciliation-service/internals/usecase/reconciliation/mock_usecase.go
